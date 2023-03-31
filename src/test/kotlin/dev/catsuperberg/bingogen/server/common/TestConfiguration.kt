@@ -12,9 +12,15 @@ object TestConfiguration {
     private const val configFile = "application.test.conf"
     private val testConfig: ApplicationConfig
 
+    val databasesToTest: List<DatabaseInfo>
+
     init {
         val configExists = javaClass.classLoader.getResource(configFile) != null
         testConfig = if (configExists) HoconApplicationConfig(ConfigFactory.load(configFile)) else initDefaultConfig()
+
+        databasesToTest = testConfig.configList("test.databases-to-test")
+            .map { it.property("value").getList() }
+            .map { dbInfoFromConfig(it) }
     }
 
     private fun initDefaultConfig(): ApplicationConfig {
@@ -34,11 +40,6 @@ object TestConfiguration {
         outputFile.writeText(defaultConfig.root().render(renderOptions))
         return HoconApplicationConfig(defaultConfig)
     }
-
-    val databasesToTest = testConfig.configList("test.databases-to-test")
-        .map { it.property("value").getList() }
-        .map { dbInfoFromConfig(it) }
-
 
     private fun dbInfoFromConfig(strings: List<String>) = DatabaseInfo(strings[0], strings[1], strings[2], strings[3])
     private fun DatabaseInfo.toConfigList() = listOf(url, driver, user, password)

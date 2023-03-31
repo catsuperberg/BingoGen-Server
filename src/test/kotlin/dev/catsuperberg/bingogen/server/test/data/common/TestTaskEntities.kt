@@ -1,10 +1,11 @@
-package dev.catsuperberg.bingogen.server.repository
+package dev.catsuperberg.bingogen.server.test.data.common
 
 import dev.catsuperberg.bingogen.server.common.FloatRange
+import dev.catsuperberg.bingogen.server.repository.Task
 import org.joda.time.Duration
 import kotlin.random.Random
 
-object TaskRepositoryTestData {
+object TestTaskEntities {
     private val games = listOf("Galactic Odyssey", "Shadow Realm Chronicles", "Neon Nightscape", "Lost in the Labyrinth", "Cybernetic Crusade")
     private val taskSheets = listOf("basic", "hard", "only stats")
 
@@ -16,7 +17,7 @@ object TaskRepositoryTestData {
         subject = "subject"
         firstVariant = "var1"
         secondVariant = "var2"
-        range = FloatRange(1f.rangeTo(2f))
+        range = FloatRange(1f, 2f)
         distribution = 3f
         unit = "unit"
         timeToKeep = Duration.standardMinutes(5)
@@ -25,18 +26,26 @@ object TaskRepositoryTestData {
 
     private var increment: Long = 0
 
-    val testEntities: List<Task> = games.flatMap { gameValue ->
+    val multiGameAndSheetEntities: List<Task> = games.flatMap { gameValue ->
         (taskSheets + listOf("$gameValue-unique")).flatMap { sheetValue ->
-                List(5) {
-                    baseResultEntity.copy().apply {
-                        game = gameValue
-                        taskSheet = sheetValue
-                        shortText = (1..5).joinToString("") { Random.nextInt(36).toString(36) }
-                        timeToKeep = Duration.standardSeconds(6 * ++increment * increment)
-                    }
+            List(5) {
+                baseResultEntity.copy().apply {
+                    game = gameValue
+                    taskSheet = sheetValue
+                    shortText = randomSting()
+                    timeToKeep = Duration.standardSeconds(6 * ++increment * increment)
                 }
             }
         }
+    }
+
+    val singleSheetEntities: List<Task> = List(80) {
+        baseResultEntity.copy().apply {
+            shortText = randomSting(10)
+        }
+    }
+
+    private fun randomSting(length: Int = 5) = (1..length).joinToString("") { Random.nextInt(36).toString(36) }
 
     val blankResultEntity = baseResultEntity.copy().also {
         it.description = null
@@ -50,5 +59,5 @@ object TaskRepositoryTestData {
         it.fromStart = false
     }
 
-    val taskEntitiesWithBlank = testEntities + listOf(blankResultEntity)
+    val multiGameAndSheetEntitiesBlank = multiGameAndSheetEntities + listOf(blankResultEntity)
 }

@@ -6,14 +6,6 @@ import org.ktorm.dsl.BatchInsertStatementBuilder
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 import java.time.LocalTime
-import kotlin.random.Random
-
-data class TaskDTO(
-    val shortText: String,
-    val description: String,
-    val timeToKeep: Duration?,
-    val fromStart: Boolean
-)
 
 interface Task: Entity<Task> {
     companion object : Entity.Factory<Task>()
@@ -104,39 +96,4 @@ object Tasks: Table<Task>("task") {
                 set(it.fromStart, taskEntity.fromStart)
             }
         }
-}
-
-
-// TODO simple implementation, should apply sentence case and be done in business logic
-fun Task.transform(): TaskDTO {
-    val subject = this.subject
-    val variants = listOf(this.firstVariant, this.secondVariant).ifEmpty { null }
-    val variant = variants?.random()
-    val midRange = this.range?.let { Random.nextDouble(it.start.toDouble(), it.endInclusive.toDouble()) }
-    val (offsetPlus, offsetMinus) = ((this.distribution ?: 0f) / 100).let { Pair(1 + it, 1 - it) }
-    val range = midRange?.let { it * offsetMinus..it * offsetPlus }
-
-    var shortText = this.shortText
-    var description = this.description ?: shortText
-    subject?.also {
-        shortText = shortText.replace("\$s", it)
-        description = description.replace("\$s", it)
-    }
-    variant?.also {
-        shortText = shortText.replace("\$v", it)
-        description = description.replace("\$v", it)
-    }
-    midRange?.also {
-        shortText = shortText.replace("\$mr", "$it")
-        description = description.replace("\$mr", "$it")
-    }
-    range?.also {
-        shortText = shortText.replace("\$r", "$it")
-        description = description.replace("\$r", "$it")
-    }
-    this.unit?.also {
-        shortText = shortText.replace("\$u", it)
-        description = description.replace("\$u", it)
-    }
-    return TaskDTO(shortText, description, this.timeToKeep, this.fromStart)
 }

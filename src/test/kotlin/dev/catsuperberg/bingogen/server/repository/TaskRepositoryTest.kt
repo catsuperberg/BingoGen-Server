@@ -2,6 +2,7 @@ package dev.catsuperberg.bingogen.server.repository
 
 import dev.catsuperberg.bingogen.server.common.TestConfiguration
 import dev.catsuperberg.bingogen.server.repository.Tasks.item
+import dev.catsuperberg.bingogen.server.test.data.common.TestTaskEntities
 import org.h2.jdbc.JdbcSQLSyntaxErrorException
 import org.junit.After
 import org.junit.Before
@@ -22,7 +23,7 @@ import kotlin.test.assertEquals
 @RunWith(value = Parameterized::class)
 class TaskRepositoryTest(private val dbInfo: DatabaseInfo) {
     companion object {
-        val testData = TaskRepositoryTestData
+        val testData = TestTaskEntities
         lateinit var referenceDatabase: Database
         lateinit var databaseUnderTest: Database
 
@@ -41,7 +42,7 @@ class TaskRepositoryTest(private val dbInfo: DatabaseInfo) {
                 }
 
                 database.batchInsert(Tasks) {
-                    testData.testEntities.forEach { item(it) }
+                    testData.multiGameAndSheetEntities.forEach { item(it) }
                 }
             }
         }
@@ -80,7 +81,7 @@ class TaskRepositoryTest(private val dbInfo: DatabaseInfo) {
 
     @Test
     fun testInitialization() {
-        TaskRepository(databaseUnderTest, testData.testEntities)
+        TaskRepository(databaseUnderTest, testData.multiGameAndSheetEntities)
 
         val expectedTable = referenceDatabase.sequenceOf(Tasks).toList()
         val actualTable = databaseUnderTest.sequenceOf(Tasks).toList()
@@ -89,8 +90,8 @@ class TaskRepositoryTest(private val dbInfo: DatabaseInfo) {
 
     @Test
     fun testTableDroppedOnReinit() {
-        TaskRepository(databaseUnderTest, testData.testEntities)
-        assertDoesNotThrow { TaskRepository(databaseUnderTest, testData.testEntities) }
+        TaskRepository(databaseUnderTest, testData.multiGameAndSheetEntities)
+        assertDoesNotThrow { TaskRepository(databaseUnderTest, testData.multiGameAndSheetEntities) }
 
         val expectedTable = referenceDatabase.sequenceOf(Tasks).toList()
         val actualTable = databaseUnderTest.sequenceOf(Tasks).toList()
@@ -104,30 +105,30 @@ class TaskRepositoryTest(private val dbInfo: DatabaseInfo) {
 
     @Test
     fun testFindGames() {
-        val expectedGames = testData.testEntities.map { it.game }.distinct().toSet()
-        val repository = TaskRepository(databaseUnderTest, testData.testEntities)
+        val expectedGames = testData.multiGameAndSheetEntities.map { it.game }.distinct().toSet()
+        val repository = TaskRepository(databaseUnderTest, testData.multiGameAndSheetEntities)
         assertEquals(expectedGames, repository.findAllGames())
     }
 
     @Test
     fun testFindTaskSheets() {
-        val games = testData.testEntities.map { it.game }.distinct().toSet()
-        val repository = TaskRepository(databaseUnderTest, testData.testEntities)
+        val games = testData.multiGameAndSheetEntities.map { it.game }.distinct().toSet()
+        val repository = TaskRepository(databaseUnderTest, testData.multiGameAndSheetEntities)
         games.forEach { game ->
-            val expectedTaskSheets = testData.testEntities.filter { it.game == game }.map { it.taskSheet }.distinct().toSet()
+            val expectedTaskSheets = testData.multiGameAndSheetEntities.filter { it.game == game }.map { it.taskSheet }.distinct().toSet()
             assertEquals(expectedTaskSheets, repository.findAllTaskSheets(game))
         }
     }
 
     @Test
     fun testFindTasks() {
-        val games = testData.testEntities.map { it.game }.distinct().toSet()
-        val repository = TaskRepository(databaseUnderTest, testData.testEntities)
+        val games = testData.multiGameAndSheetEntities.map { it.game }.distinct().toSet()
+        val repository = TaskRepository(databaseUnderTest, testData.multiGameAndSheetEntities)
         val taskSheets = games.flatMap { game ->
-            testData.testEntities.filter { it.game == game }.map { it.taskSheet }.distinct().map { game to it }
+            testData.multiGameAndSheetEntities.filter { it.game == game }.map { it.taskSheet }.distinct().map { game to it }
         }
         taskSheets.forEach { sheet ->
-            val expectedTasks = testData.testEntities.filter { it.game == sheet.first && it.taskSheet == sheet.second }
+            val expectedTasks = testData.multiGameAndSheetEntities.filter { it.game == sheet.first && it.taskSheet == sheet.second }
             assertEquals(expectedTasks, repository.findAllTasks(sheet.first, sheet.second).map(Task::stripId))
         }
     }

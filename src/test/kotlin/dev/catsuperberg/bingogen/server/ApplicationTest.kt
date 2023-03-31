@@ -1,6 +1,6 @@
 package dev.catsuperberg.bingogen.server
 
-import dev.catsuperberg.bingogen.server.plugins.configureRouting
+import dev.catsuperberg.bingogen.server.presentation.configureRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

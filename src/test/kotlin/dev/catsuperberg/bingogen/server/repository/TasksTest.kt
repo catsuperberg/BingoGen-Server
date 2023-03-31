@@ -1,6 +1,7 @@
 package dev.catsuperberg.bingogen.server.repository
 
 import dev.catsuperberg.bingogen.server.common.FloatRange
+import dev.catsuperberg.bingogen.server.test.data.common.TestTaskEntities
 import org.joda.time.Duration
 import org.junit.Test
 import org.ktorm.database.Database
@@ -16,7 +17,7 @@ import java.time.LocalTime
 import kotlin.test.assertEquals
 
 class TasksTest {
-    private val testData = TaskRepositoryTestData
+    private val testData = TestTaskEntities
 
     @Test
     fun testRangeSerialization() {
@@ -55,7 +56,7 @@ class TasksTest {
             }
 
             database.batchInsert(Tasks) {
-                testData.taskEntitiesWithBlank.forEach { taskEntity ->
+                testData.multiGameAndSheetEntitiesBlank.forEach { taskEntity ->
                     item {
                         set(it.game, taskEntity.game)
                         set(it.taskSheet, taskEntity.taskSheet)
@@ -76,6 +77,6 @@ class TasksTest {
 
         val result = database.sequenceOf(Tasks).toList().map(Task::stripId)
 
-        assertEquals(testData.taskEntitiesWithBlank, result)
+        assertEquals(testData.multiGameAndSheetEntitiesBlank, result)
     }
 }

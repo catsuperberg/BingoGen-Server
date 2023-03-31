@@ -19,6 +19,12 @@ class FloatRange(private var range: ClosedRange<Float>) : Serializable, ClosedRa
         }
     }
 
+    override val start: Float
+        get() = range.start
+
+    override val endInclusive: Float
+        get() = range.endInclusive
+
     constructor(start: Float, endInclusive: Float) : this(start.rangeTo(endInclusive))
 
     private fun writeObject(out: ObjectOutputStream) {

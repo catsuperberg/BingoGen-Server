@@ -1,4 +1,4 @@
-package dev.catsuperberg.bingogen.server.plugins
+package dev.catsuperberg.bingogen.server.presentation
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*

@@ -1,7 +1,6 @@
 package dev.catsuperberg.bingogen.server.repository
 
-import dev.catsuperberg.bingogen.server.common.FloatRange
-import org.joda.time.Duration
+import dev.catsuperberg.bingogen.server.test.data.common.TestTaskEntities
 
 object CSVTaskReaderTestData {
     val nonTaskCsv: String = """
@@ -23,32 +22,9 @@ object CSVTaskReaderTestData {
     const val noSheetNameCSVRow = "test,,short,,,,,,,,,"
     const val noShortTextCSVRow = "test,test,,,,,,,,,,"
 
-    val baseResultEntity = Task {
-        game = "test"
-        taskSheet = "test"
-        shortText = "short"
-        description = "description"
-        subject = "subject"
-        firstVariant = "var1"
-        secondVariant = "var2"
-        range = FloatRange(1f, 2f)
-        distribution = 3f
-        unit = "unit"
-        timeToKeep = Duration.standardMinutes(5)
-        fromStart = true
-    }
+    val baseResultEntity = TestTaskEntities.baseResultEntity
 
-    val blankResultEntity = baseResultEntity.copy().also {
-        it.description = null
-        it.subject = null
-        it.firstVariant = null
-        it.secondVariant = null
-        it.range = null
-        it.distribution = null
-        it.unit = null
-        it.timeToKeep = null
-        it.fromStart = false
-    }
+    val blankResultEntity = TestTaskEntities.blankResultEntity
 
     const val garbageValue = "22f23f..435.35%"
 }

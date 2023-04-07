@@ -6,15 +6,17 @@ import java.io.Serializable
 
 class FloatRange(private var range: ClosedRange<Float>) : Serializable, ClosedRange<Float> by range {
     companion object {
-        private val exception = NumberFormatException("Wrong string format to parse by ${FloatRange::javaClass.name}")
-
         fun parseFromString(value: String) = try { FloatRange(parseRange(value)) } catch (e: NumberFormatException) { null }
 
-        private fun parseRange(value: String): ClosedRange<Float> {
+        fun parseRange(value: String): ClosedRange<Float> {
             val values = value.split("..")
-            if (values.size != 2) throw exception
-            return try { values.map { it.toFloat() }.let { it.first().rangeTo(it.last()) } } catch (e: Exception) {
-                throw exception
+            return try {
+                if (values.size != 2) throw Exception()
+                values.map { it.toFloat() }.let {
+                    it.first().rangeTo(it.last())
+                }
+            } catch (e: Exception) {
+                throw NumberFormatException("Wrong string format to parse by ${FloatRange::javaClass.name} | String: $value")
             }
         }
     }

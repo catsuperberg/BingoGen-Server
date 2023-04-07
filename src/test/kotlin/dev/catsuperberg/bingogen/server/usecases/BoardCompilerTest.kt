@@ -1,5 +1,7 @@
 package dev.catsuperberg.bingogen.server.usecases
 
+import dev.catsuperberg.bingogen.server.presentation.TaskDTO
+import dev.catsuperberg.bingogen.server.repository.Task
 import dev.catsuperberg.bingogen.server.repository.TaskRepository
 import dev.catsuperberg.bingogen.server.repository.Tasks
 import dev.catsuperberg.bingogen.server.test.data.common.TestTaskEntities
@@ -17,13 +19,23 @@ class BoardCompilerTest {
             index, task -> task.copy().apply { set(Tasks.id.name, index.toLong()) }
     }.toSet()
 
+    private object TaskMapperFake : ITaskMapper {
+        override fun map(task: Task): TaskDTO = TaskDTO(
+            task.id ?: throw Exception("Id is null"),
+            task.shortText,
+            task.description ?: "",
+            task.timeToKeep?.millis,
+            task.fromStart
+        )
+    }
+
     private val repositoryMock = mock<TaskRepository> {
         entitiesWithIds.first().let { task ->
             on { findAllTasks(task.game, task.taskSheet) } doReturn entitiesWithIds
         }
     }
 
-    private val compiler = BoardCompiler(repositoryMock)
+    private val compiler = BoardCompiler(repositoryMock, TaskMapperFake)
 
     @Test
     fun testNotEnoughTasks() {

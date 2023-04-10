@@ -49,7 +49,7 @@ object Tasks: Table<Task>("task") {
         game VARCHAR(128) NOT NULL,
         task_sheet VARCHAR(128) NOT NULL,
         short_text VARCHAR(128) NOT NULL,
-        description VARCHAR(128),
+        description VARCHAR(512),
         subject VARCHAR(128),
         first_variant VARCHAR(128),
         second_variant VARCHAR(128),

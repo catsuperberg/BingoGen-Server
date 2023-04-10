@@ -38,6 +38,34 @@ class BoardCompilerTest {
     private val compiler = BoardCompiler(repositoryMock, TaskMapperFake)
 
     @Test
+    fun testNoGame() {
+        assertThrows<BoardCompiler.NoTaskSheetFound> {
+            entitiesWithIds.first().let { task -> compiler.compile(
+                2,
+                task.game+"non existent",
+                task.taskSheet) }
+        }
+    }
+
+    fun testNoSheet() {
+        assertThrows<BoardCompiler.NoTaskSheetFound> {
+            entitiesWithIds.first().let { task -> compiler.compile(
+                2,
+                task.game,
+                task.taskSheet+"non existent") }
+        }
+    }
+
+    fun testNoGameAndSheet() {
+        assertThrows<BoardCompiler.NoTaskSheetFound> {
+            entitiesWithIds.first().let { task -> compiler.compile(
+                2,
+                task.game+"non existent",
+                task.taskSheet+"non existent") }
+        }
+    }
+
+    @Test
     fun testNotEnoughTasks() {
         assertThrows<BoardCompiler.NotEnoughEntriesException> {
             entitiesWithIds.first().let { task -> compiler.compile(

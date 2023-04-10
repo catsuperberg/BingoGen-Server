@@ -5,11 +5,20 @@ import dev.catsuperberg.bingogen.server.presentation.TaskDTO
 import dev.catsuperberg.bingogen.server.repository.TaskRepository
 
 class BoardCompiler(private val repository: TaskRepository, private val taskMapper: ITaskMapper) {
+    class NoTaskSheetFound(message: String) : Exception(message)
     class NotEnoughEntriesException(message: String) : Exception(message)
 
     fun compile(sideCount: Int, game: String, taskSheet: String): Grid<TaskDTO> {
         val taskCount = sideCount * sideCount
         val rawTasks = repository.findAllTasks(game, taskSheet)
+        if(rawTasks.isEmpty()) {
+            val otherTaskSheets = repository.findAllTaskSheets(game)
+            val otherString = if
+                    (otherTaskSheets.isNotEmpty()) ". But task sheets found for $game: $otherTaskSheets"
+            else
+                ". Available games: ${repository.findAllGames()}"
+            throw NoTaskSheetFound("No tasks found for combination of $game - $taskSheet$otherString")
+        }
         if(rawTasks.size < taskCount)
             throw NotEnoughEntriesException("Not enough tasks in database for board with side of $sideCount")
         val tasks = rawTasks.shuffled().take(taskCount)

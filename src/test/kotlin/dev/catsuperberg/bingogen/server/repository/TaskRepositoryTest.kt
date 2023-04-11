@@ -21,7 +21,7 @@ import org.postgresql.util.PSQLException
 import kotlin.test.assertEquals
 
 @RunWith(value = Parameterized::class)
-class TaskRepositoryTest(private val dbInfo: DatabaseInfo) {
+class TaskRepositoryTest(private val dbInfo: DatabaseCredentials) {
     companion object {
         val testData = TestTaskEntities
         lateinit var referenceDatabase: Database
@@ -49,7 +49,7 @@ class TaskRepositoryTest(private val dbInfo: DatabaseInfo) {
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
-        fun data(): List<DatabaseInfo> = TestConfiguration.databasesToTest
+        fun data(): List<DatabaseCredentials> = TestConfiguration.databasesToTest
     }
 
     @Before

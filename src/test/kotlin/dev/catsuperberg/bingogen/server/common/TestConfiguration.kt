@@ -3,7 +3,7 @@ package dev.catsuperberg.bingogen.server.common
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import com.typesafe.config.ConfigValueFactory
-import dev.catsuperberg.bingogen.server.repository.DatabaseInfo
+import dev.catsuperberg.bingogen.server.repository.DatabaseCredentials
 import io.ktor.server.config.*
 import java.io.File
 
@@ -12,7 +12,7 @@ object TestConfiguration {
     private const val configFile = "application.test.conf"
     private val testConfig: ApplicationConfig
 
-    val databasesToTest: List<DatabaseInfo>
+    val databasesToTest: List<DatabaseCredentials>
 
     init {
         val configExists = javaClass.classLoader.getResource(configFile) != null
@@ -20,14 +20,14 @@ object TestConfiguration {
 
         databasesToTest = testConfig.configList("test.databases-to-test")
             .map { it.property("value").getList() }
-            .map { dbInfoFromConfig(it) }
+            .map(DatabaseCredentials::fromConfigStrings)
     }
 
     private fun initDefaultConfig(): ApplicationConfig {
         val defaultConfig = ConfigFactory.empty().withValue(
             "test.databases-to-test", ConfigValueFactory.fromIterable(
                 listOf(
-                    mapOf("value" to DatabaseInfo.H2TEST.toConfigList())
+                    mapOf("value" to DatabaseCredentials.H2TEST.toConfigList())
                 )
             )
         )
@@ -41,6 +41,5 @@ object TestConfiguration {
         return HoconApplicationConfig(defaultConfig)
     }
 
-    private fun dbInfoFromConfig(strings: List<String>) = DatabaseInfo(strings[0], strings[1], strings[2], strings[3])
-    private fun DatabaseInfo.toConfigList() = listOf(url, driver, user, password)
+    private fun DatabaseCredentials.toConfigList() = listOf(url, driver, user, password)
 }

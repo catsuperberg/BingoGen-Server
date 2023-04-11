@@ -37,4 +37,4 @@ out/
 
 ### Config files ###
 src/test/resources/application.test.conf
-src/main/resources/application.conf
+src/main/resources/local configuration/*

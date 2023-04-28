@@ -1,12 +1,11 @@
 package dev.catsuperberg.bingogen.server.common
 
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.junit.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class GridTest {
+    private val defaultSideCount = 3
     private val defaultGrid = Grid(
         listOf(
             listOf(1, 2, 3),
@@ -21,6 +20,13 @@ class GridTest {
         listOf(3, 6, 9)
     )
 
+    private val nonSquareColumns = listOf(
+        listOf(1, 4, 7),
+        listOf(2, 5, 8, 7),
+        listOf(2, 5),
+        listOf(3, 6, 9)
+    )
+
     @Test
     fun testColumnsProperty() {
         assertEquals(defaultColumns, defaultGrid.columns)
@@ -28,23 +34,39 @@ class GridTest {
 
     @Test
     fun testColumn() {
-        repeat(defaultGrid.size) {
+        repeat(defaultGrid.sideCount) {
             assertEquals(defaultColumns[it], defaultGrid.column(it))
         }
     }
 
     @Test
     fun testRow() {
-        repeat(defaultGrid.size) {
-            assertEquals(defaultGrid[it], defaultGrid.row(it))
+        repeat(defaultGrid.sideCount) {
+            assertEquals(defaultGrid.rows[it], defaultGrid.row(it))
         }
     }
 
     @Test
-    fun testSerialization() {
-        val serializedGrid = Json.encodeToString(defaultGrid)
-        val deserializedGrid = Json.decodeFromString<Grid<Int>>(serializedGrid)
+    fun testNonSquare() {
+        assertThrows<IllegalArgumentException> { Grid(nonSquareColumns) }
+    }
 
-        assertEquals(defaultGrid, deserializedGrid)
+    @Test
+    fun testSideCount() {
+        val expectedCount = defaultSideCount
+        val propertyResult = defaultGrid.sideCount
+        val rowsResult = defaultGrid.rows.size
+        val columnResult = defaultGrid.columns.size
+        val results = listOf(propertyResult, rowsResult, columnResult)
+        results.forEach { assertEquals(expectedCount, it) }
+    }
+
+    @Test
+    fun testCount() {
+        val expectedCount = defaultSideCount * defaultSideCount
+        val propertyResult = defaultGrid.count
+        val flattenResult = defaultGrid.rows.flatten().size
+        val results = listOf(propertyResult, flattenResult)
+        results.forEach { assertEquals(expectedCount, it) }
     }
 }

@@ -1,5 +1,6 @@
 package dev.catsuperberg.bingogen.server.usecases
 
+import dev.catsuperberg.bingogen.server.common.Grid
 import dev.catsuperberg.bingogen.server.presentation.TaskDTO
 import dev.catsuperberg.bingogen.server.repository.Task
 import dev.catsuperberg.bingogen.server.repository.TaskRepository
@@ -77,7 +78,7 @@ class BoardCompilerTest {
 
     @Test
     fun testEachLineBeatable() {
-        val board = entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }
+        val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }.rows)
         val lines = board.rows + board.columns
         lines.forEach { line ->
             assertEquals(line.size, line.distinctBy { it.dbid }.size)
@@ -91,8 +92,8 @@ class BoardCompilerTest {
         repeat(2000) {
             val sourceIds = entitiesWithIds.mapNotNull { it.id }
             val sortedSourceIds = sourceIds.sorted()
-            val board = entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }
-            val rowSequence = board.flatten().map { it.dbid }
+            val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }.rows)
+            val rowSequence = board.rows.flatten().map { it.dbid }
             val columnSequence = board.columns.flatten().map { it.dbid }
             val ordered = rowSequence.sorted()
 
@@ -113,8 +114,8 @@ class BoardCompilerTest {
 
     private fun testCountAsExpected(sideCount: Int) {
         val expectedCount = sideCount * sideCount
-        val board = entitiesWithIds.first().let { task -> compiler.compile(sideCount, task.game, task.taskSheet) }
-        val count = board.flatten().size
+        val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(sideCount, task.game, task.taskSheet) }.rows)
+        val count = board.count
         assertEquals(expectedCount, count)
     }
 }

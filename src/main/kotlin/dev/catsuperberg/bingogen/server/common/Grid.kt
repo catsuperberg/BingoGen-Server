@@ -15,4 +15,7 @@ class Grid<T>(val rows: List<List<T>>) {
 
     fun column(index: Int): List<T> = List(rows.size) { row -> rows[row][index] }
     fun row(index: Int): List<T> = rows[index]
+
+    override fun toString(): String = rows.toString()
+    override fun equals(other: Any?) = this === other || other is Grid<*> && rows == other.rows
 }

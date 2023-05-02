@@ -3,6 +3,8 @@ package dev.catsuperberg.bingogen.server.common
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotSame
 
 class GridTest {
     private val defaultSideCount = 3
@@ -68,5 +70,13 @@ class GridTest {
         val flattenResult = defaultGrid.rows.flatten().size
         val results = listOf(propertyResult, flattenResult)
         results.forEach { assertEquals(expectedCount, it) }
+    }
+
+    @Test
+    fun testEquals() {
+        val createdGrid = Grid(defaultGrid.rows)
+        assertNotEquals(defaultGrid.hashCode(), createdGrid.hashCode())
+        assertNotSame(defaultGrid, createdGrid)
+        assertEquals(defaultGrid, createdGrid)
     }
 }

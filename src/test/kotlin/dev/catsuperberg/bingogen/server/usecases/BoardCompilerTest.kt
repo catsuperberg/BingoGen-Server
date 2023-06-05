@@ -78,7 +78,7 @@ class BoardCompilerTest {
 
     @Test
     fun testEachLineBeatable() {
-        val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }.rows)
+        val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }.rows.flatten())
         val lines = board.rows + board.columns
         lines.forEach { line ->
             assertEquals(line.size, line.distinctBy { it.dbid }.size)
@@ -92,7 +92,7 @@ class BoardCompilerTest {
         repeat(2000) {
             val sourceIds = entitiesWithIds.mapNotNull { it.id }
             val sortedSourceIds = sourceIds.sorted()
-            val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }.rows)
+            val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(5, task.game, task.taskSheet) }.rows.flatten())
             val rowSequence = board.rows.flatten().map { it.dbid }
             val columnSequence = board.columns.flatten().map { it.dbid }
             val ordered = rowSequence.sorted()
@@ -114,8 +114,8 @@ class BoardCompilerTest {
 
     private fun testCountAsExpected(sideCount: Int) {
         val expectedCount = sideCount * sideCount
-        val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(sideCount, task.game, task.taskSheet) }.rows)
-        val count = board.count
+        val board = Grid(entitiesWithIds.first().let { task -> compiler.compile(sideCount, task.game, task.taskSheet) }.rows.flatten())
+        val count = board.size
         assertEquals(expectedCount, count)
     }
 }

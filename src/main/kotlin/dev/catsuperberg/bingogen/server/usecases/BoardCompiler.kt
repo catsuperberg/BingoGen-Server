@@ -23,7 +23,7 @@ class BoardCompiler(private val repository: TaskRepository, private val taskMapp
             throw NotEnoughEntriesException("Not enough tasks in database for board with side of $sideCount")
         val tasks = rawTasks.shuffled().take(taskCount)
         val dtoList = tasks.map(taskMapper::map)
-        val grid = Grid(dtoList.chunked(sideCount))
+        val grid = Grid(dtoList)
         return GridDTO(grid.rows)
     }
 }

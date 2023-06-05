@@ -1,6 +1,6 @@
 package dev.catsuperberg.bingogen.server.common
 
-import org.junit.Assert.assertThrows
+import dev.catsuperberg.bingogen.server.common.Grid.Companion.toGrid
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -14,7 +14,7 @@ class GridTest {
             listOf(1, 2, 3),
             listOf(4, 5, 6),
             listOf(7, 8, 9)
-        )
+        ).flatten()
     )
 
     private val defaultColumns = listOf(
@@ -23,12 +23,11 @@ class GridTest {
         listOf(3, 6, 9)
     )
 
-    private val nonSquareColumns = listOf(
+    private val nonSquareSequence = listOf(
         listOf(1, 4, 7),
-        listOf(2, 5, 8, 7),
+        listOf(2, 5, 8),
         listOf(2, 5),
-        listOf(3, 6, 9)
-    )
+    ).flatten()
 
     @Test
     fun testColumnsProperty() {
@@ -51,7 +50,7 @@ class GridTest {
 
     @Test
     fun testNonSquare() {
-        assertThrows<IllegalArgumentException> { Grid(nonSquareColumns) }
+        assertThrows<IllegalArgumentException> { Grid(nonSquareSequence) }
     }
 
     @Test
@@ -67,7 +66,7 @@ class GridTest {
     @Test
     fun testCount() {
         val expectedCount = defaultSideCount * defaultSideCount
-        val propertyResult = defaultGrid.count
+        val propertyResult = defaultGrid.size
         val flattenResult = defaultGrid.rows.flatten().size
         val results = listOf(propertyResult, flattenResult)
         results.forEach { assertEquals(expectedCount, it) }
@@ -75,15 +74,15 @@ class GridTest {
 
     @Test
     fun testEquals() {
-        val createdGrid = Grid(defaultGrid.rows)
-        assertNotEquals(defaultGrid.hashCode(), createdGrid.hashCode())
-        assertNotSame(defaultGrid, createdGrid)
-        assertEquals(defaultGrid, createdGrid)
+        val grid = Grid(defaultGrid.toList())
+        assertNotEquals(defaultGrid.hashCode(), grid.hashCode())
+        assertNotSame(defaultGrid, grid)
+        assertEquals(defaultGrid, grid)
     }
 
     @Test
     fun testGetOperatorMappedAsSequentialRows() {
-        val grid = Grid(defaultGrid.rows)
+        val grid = Grid(defaultGrid.toList())
 
         assertEquals(1, grid[0])
         assertEquals(2, grid[1])
@@ -91,10 +90,9 @@ class GridTest {
         assertEquals(9, grid[8])
     }
 
-    @Test()
-    fun testThrowsOutOfBounds() {
-        val grid = Grid(defaultGrid.rows)
-
-        assertThrows(IndexOutOfBoundsException::class.java) { grid[9] }
+    @Test
+    fun testToGrid() {
+        val grid = defaultGrid.toList().toGrid()
+        assertEquals(defaultGrid, grid)
     }
 }

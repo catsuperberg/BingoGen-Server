@@ -1,5 +1,6 @@
 package dev.catsuperberg.bingogen.server.common
 
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -78,5 +79,22 @@ class GridTest {
         assertNotEquals(defaultGrid.hashCode(), createdGrid.hashCode())
         assertNotSame(defaultGrid, createdGrid)
         assertEquals(defaultGrid, createdGrid)
+    }
+
+    @Test
+    fun testGetOperatorMappedAsSequentialRows() {
+        val grid = Grid(defaultGrid.rows)
+
+        assertEquals(1, grid[0])
+        assertEquals(2, grid[1])
+        assertEquals(5, grid[4])
+        assertEquals(9, grid[8])
+    }
+
+    @Test()
+    fun testThrowsOutOfBounds() {
+        val grid = Grid(defaultGrid.rows)
+
+        assertThrows(IndexOutOfBoundsException::class.java) { grid[9] }
     }
 }

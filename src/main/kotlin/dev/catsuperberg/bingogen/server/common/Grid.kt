@@ -2,7 +2,7 @@ package dev.catsuperberg.bingogen.server.common
 
 import kotlin.math.sqrt
 
-class Grid<T>(data: List<T>) : List<T> by data {
+class Grid<T>(data: List<T>) : List<T> by data, AbstractList<T>() {
     companion object {
         fun <T> fromRows(rows: List<List<T>>): Grid<T> = Grid(rows.flatten())
         fun <T> List<T>.toGrid() = Grid(this)
@@ -25,5 +25,4 @@ class Grid<T>(data: List<T>) : List<T> by data {
 
 
     override fun toString(): String = rows.toString()
-    override fun equals(other: Any?) = this === other || other is Grid<*> && rows == other.rows
 }
